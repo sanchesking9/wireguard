@@ -6,12 +6,12 @@ import android.os.ParcelFileDescriptor;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.Binder;
-import android.support.v4.content.LocalBroadcastManager;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
-import android.support.v4.app.NotificationCompat;
+import androidx.core.app.NotificationCompat;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -235,9 +235,11 @@ public class WGVpnService extends VpnService implements WGVpnServiceCallbacks {
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setOngoing(true);
         if (rnmodule != null) {
-            PendingIntent close = PendingIntent.getActivity(rnmodule.getContext(), 0,
-			    new Intent(rnmodule.getContext(), rnmodule.getActivity().getClass()),
-			    PendingIntent.FLAG_CANCEL_CURRENT);
+            PendingIntent close = PendingIntent.getActivity(
+            rnmodule.getContext(),
+             0,
+			   new Intent(rnmodule.getContext(), rnmodule.getActivity().getClass()),
+			    PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
             nBuilder.setContentIntent(close);
         }
         startForeground(1, nBuilder.build());
