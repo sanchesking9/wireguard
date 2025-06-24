@@ -167,7 +167,7 @@ public class WGVpnService extends VpnService implements WGVpnServiceCallbacks {
 
         // I'm ashamed. Couldn't figure out a strange 'timeout' bug after VPN is turned on
         // I swear we will get rid of this once I figure it out
-        // builder.addDisallowedApplication(getPackageName());
+        builder.addDisallowedApplication(getPackageName());
 
         // Add interface address (local IP we will get once we're in the network)
         for(CIDR addr : newConfig.GetInterface().GetAddresses()) {
