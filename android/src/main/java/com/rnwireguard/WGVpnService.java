@@ -127,7 +127,7 @@ public class WGVpnService extends VpnService implements WGVpnServiceCallbacks {
                     protect(wireguard.wgGetSocketV6(tunnelHandle));
 
                     connected = true;
-                    startForegnd(_icon, _title, _text);
+                     startForegnd(_icon, _title, _text);
                     if (rnmodule != null && rnmodule.getConnectPromise() != null) rnmodule.getConnectPromise().resolve(true);
                     Log.i("WG_INFO", "VPN_SERVICE_ON_START_USER");
                 }
@@ -216,25 +216,26 @@ public class WGVpnService extends VpnService implements WGVpnServiceCallbacks {
         }
     }
 
-    // Creates the clickable notification (needs to be called right after service is started)
+    // Creates a silent notification (required for foreground service on Android 8+)
     private void startForegnd(int icon, String title, String text) throws Exception {
+        String silentChannelId = "vpn_silent_channel";
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel chan = new NotificationChannel(
-                Constants.NotifChannelID,
-                Constants.NotifChannelName,
-                NotificationManager.IMPORTANCE_HIGH);
-            chan.enableVibration(true);
+                silentChannelId,
+                "VPN Service",
+                NotificationManager.IMPORTANCE_MIN);
+            chan.enableVibration(false);
+            chan.setSound(null, null);
+            chan.setShowBadge(false);
             ((NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE))
                 .createNotificationChannel(chan);
         }
         NotificationCompat.Builder nBuilder = new NotificationCompat.Builder(
-            this, Constants.NotifChannelID)
+            this, silentChannelId)
                 .setSmallIcon(icon)
-                .setContentTitle(title)
-                .setContentText(text)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setOngoing(true);
-        if (rnmodule != null) {
+                .setPriority(NotificationCompat.PRIORITY_MIN)
+                .setSilent(true);
+        if (rnmodule != null && rnmodule.getContext() != null && rnmodule.getActivity() != null) {
             PendingIntent close = PendingIntent.getActivity(
             rnmodule.getContext(),
              0,
