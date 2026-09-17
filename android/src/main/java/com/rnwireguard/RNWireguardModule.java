@@ -110,6 +110,10 @@ public class RNWireguardModule extends ReactContextBaseJavaModule implements RNW
 		this.reactContext = reactContext;
 		pkg = reactContext.getPackageName();
 		wireguard = new WGWrapper(reactContext);
+		if (!wireguard.isAvailable()) {
+			Log.w("WG_INFO", "WireGuard native library not available on this device - VPN disabled");
+			return;
+		}
 		connection = new ServiceConnection() {
 			@Override
 			public void onServiceDisconnected(ComponentName name) {
@@ -162,6 +166,10 @@ public class RNWireguardModule extends ReactContextBaseJavaModule implements RNW
 	@ReactMethod
 	public void _connect(
 		String confStr, String session, String icon, String title, String text, Promise promise) {
+		if (!wireguard.isAvailable()) {
+			promise.reject("WIREGUARD_UNAVAILABLE", "WireGuard is not supported on this device");
+			return;
+		}
 		try {
 			sessionName = session;
 			config = confStr;
@@ -214,6 +222,10 @@ public class RNWireguardModule extends ReactContextBaseJavaModule implements RNW
 
 	@ReactMethod
 	public void _version(Promise promise) {
+		if (!wireguard.isAvailable()) {
+			promise.reject("WIREGUARD_UNAVAILABLE", "WireGuard is not supported on this device");
+			return;
+		}
 		promise.resolve(wireguard.wgVersion());
 	}
 }

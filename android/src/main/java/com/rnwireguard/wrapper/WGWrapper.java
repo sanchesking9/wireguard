@@ -11,8 +11,19 @@ import android.content.Context;
 import com.wirevpn.rnwireguard.util.SOLoader;
 
 public final class WGWrapper {
+    private boolean available = false;
+
     public WGWrapper(Context context) {
-        SOLoader.loadSharedLibrary(context, "wg-go");
+        try {
+            SOLoader.loadSharedLibrary(context, "wg-go");
+            available = true;
+        } catch (Exception e) {
+            android.util.Log.e("WireGuard/WGWrapper", "Failed to load libwg-go.so: " + e.getMessage());
+        }
+    }
+
+    public boolean isAvailable() {
+        return available;
     }
 
     // Turn WireGuard on for given tun and config
